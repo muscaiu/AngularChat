@@ -80,3 +80,21 @@ body                            { padding-top:20px; }
     from    { -webkit-transform:translateX(200%); }
     to      { -webkit-transform: translateX(0); }
 }
+
+
+
+#toast-container .toast {
+    cursor: pointer;
+    size: 
+}
+
+#toast-container .toast::after {
+    font-family: 'Material Icons';
+    content: "close";
+    -webkit-font-feature-settings: 'liga';
+    color: #dd2c00;
+    font-size: 1.5rem;
+    font-weight: 300;
+    float: right;
+    padding-left: 2rem;
+}

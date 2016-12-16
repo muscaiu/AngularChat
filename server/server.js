@@ -29,7 +29,7 @@ io.on('connection', function (socket) {
     }
 
     socket.on('register user', function (username, password) {
-        console.log('regUser: '+ username, 'regPassword: ' + password)
+        console.log('regUser: ' + username, 'regPassword: ' + password)
         //Save user in MongoDB
         var user = new User({
             username: username,
@@ -40,10 +40,21 @@ io.on('connection', function (socket) {
         //io.sockets.emit('new user', socket.username)
     });
 
-    socket.on('login attempt', function(username, password){
-        console.log('loginUser: '+ username, 'loginPassword: ' + password)
-        socket.username = username;
-        socket.broadcast.emit('user logged in', socket.username)
+    socket.on('login attempt', function (username, password) {
+        console.log('loginUser: ' + username, 'loginPassword: ' + password)
+        User.findOne({ username: username, password: password }, function (err, user) {
+            if (user) {
+                console.log(user.username + ' logged in')
+                //send info that the user has logged in
+                socket.username = username;
+                socket.broadcast.emit('user logged in', socket.username)
+            }
+            else {
+                console.log('wrong credentials')
+                //send info wrong credentials
+                socket.emit('wrong credentials')
+            }
+        })
     })
 
 })

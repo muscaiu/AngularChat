@@ -46,7 +46,7 @@ var app = angular.module('ChatApp', ['ui.router'])
             console.log('users: ' + chat.users)
             socket.emit('login attempt', chat.usernameLogin, chat.passwordLogin)
         }
-        chat.RegisterForm = function(){
+        chat.RegisterForm = function () {
             socket.emit('register user', chat.usernameRegister, chat.passwordRegister)
             console.log('register')
         }
@@ -57,10 +57,20 @@ var app = angular.module('ChatApp', ['ui.router'])
                 console.log('logged in users: ' + chat.users)
             })
         })
+
+        socket.on('wrong credentials', function () {
+            Materialize.toast('Wrong credentials !', 3000)
+            console.log('wrong credentials')
+        })
     })
 
-//sidenav collapse
-$(".button-collapse").sideNav();
+
+
+$(document).on('click', '#toast-container .toast', function() {
+    $(this).fadeOut(function(){
+        $(this).remove();
+    });
+});
 
 
 
