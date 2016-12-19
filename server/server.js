@@ -10,6 +10,9 @@ var User = mongoose.model('user', {
     username: String,
     password: String
 })
+var Message = mongoose.model('message', {
+    message: String
+})
 
 //logged in users
 var varnumUsers = 0;
@@ -27,6 +30,13 @@ io.on('connection', function (socket) {
             res.send(result)
         })
     }
+    app.get('/api/message', GetMessages)
+    function GetMessages(req, res) {
+        Message.find({}).exec(function (err, result) {
+            console.log(result)
+            res.send(result)
+        })
+    }
 
     socket.on('register user', function (username, password) {
         console.log('regUser: ' + username, 'regPassword: ' + password)
@@ -37,7 +47,6 @@ io.on('connection', function (socket) {
         })
         user.save()
 
-        //io.sockets.emit('new user', socket.username)
     });
 
     socket.on('login attempt', function (username, password) {
@@ -47,6 +56,8 @@ io.on('connection', function (socket) {
                 console.log(user.username + ' logged in')
                 //send info that the user has logged in
                 socket.username = username;
+                //io.sockets.emit('user logged in', socket.username)
+                socket.emit('add to chatroom', socket.username)
                 socket.broadcast.emit('user logged in', socket.username)
             }
             else {
@@ -57,6 +68,16 @@ io.on('connection', function (socket) {
         })
     })
 
+    socket.on('send message', function (message) {
+        console.log('message: ' + message)
+        //Save user in MongoDB
+        var message = new Message({
+            message: message,
+        })
+        message.save()
+        //socket.emit('emit message', message)
+        io.sockets.emit('emit message', message)
+    })
 })
 
 //serve files

@@ -35,21 +35,52 @@ var app = angular.module('ChatApp', ['ui.router'])
     // })
 
     //LoginController
-    .controller('ChatController', function ChatController($scope) {
+    .controller('ChatController', function ChatController($scope, $state) {
         var socket = io();
 
         var chat = this;
         chat.users = [];
+        chat.messages = [];
+
+        LoadMessages()
+        function LoadMessages() {
+            $.getJSON('http://localhost:3000/api/message', function (data) {
+                $.each(data, function (key, val) {
+                    addChatMessage(val.message);
+                })
+            })
+        }
 
         chat.LoginForm = function () {
-            console.log(chat.usernameLogin, chat.passwordLogin)
-            console.log('users: ' + chat.users)
-            socket.emit('login attempt', chat.usernameLogin, chat.passwordLogin)
+            if (chat.usernameLogin == "") {
+                Materialize.toast('Empty fields!', 4000)
+            } else {
+                console.log(chat.usernameLogin, chat.passwordLogin)
+                console.log('users: ' + chat.users)
+                socket.emit('login attempt', chat.usernameLogin, chat.passwordLogin)
+            }
         }
+
         chat.RegisterForm = function () {
-            socket.emit('register user', chat.usernameRegister, chat.passwordRegister)
-            console.log('register')
+            if (chat.passwordRegister === chat.repeatPasswordRegister) {
+                socket.emit('register user', chat.usernameRegister, chat.passwordRegister)
+            }
+            else {
+                Materialize.toast('Passwords don`t match !', 4000)
+                console.log('wrong credentials')
+            }
         }
+
+        chat.sendMessage = function () {
+            socket.emit('send message', chat.message)
+            chat.message = ''
+        }
+
+        socket.on('add to chatroom', function () {
+            $state.go('chat.chatroom')
+            chat.usernameLogin = ''
+            chat.passwordLogin = ''
+        })
 
         socket.on('user logged in', function (data) {
             $scope.$apply(function () {
@@ -59,18 +90,33 @@ var app = angular.module('ChatApp', ['ui.router'])
         })
 
         socket.on('wrong credentials', function () {
-            Materialize.toast('Wrong credentials !', 3000)
+            Materialize.toast('Wrong credentials !', 4000)
             console.log('wrong credentials')
+        })
+
+        //Load Messages
+        var addChatMessage = function (data) {
+            $scope.$apply(function () {
+                chat.messages.push(data)
+            })
+        }
+        socket.on('emit message', function (data) {
+            $scope.$apply(function () {
+                chat.messages.push(data.message);
+            })
         })
     })
 
 
 
-$(document).on('click', '#toast-container .toast', function() {
-    $(this).fadeOut(function(){
+$(document).on('click', '#toast-container .toast', function () {
+    $(this).fadeOut(function () {
         $(this).remove();
     });
+
 });
+
+
 
 
 

@@ -1,3 +1,21 @@
-<ul ng-repeat="user in chat.users">
+<ul ng-repeat="user in chat.users track by $index">
     <li>{{user}}</li>
 </ul>
+<br>                        
+<ul ng-repeat="message in chat.messages track by $index">
+    <li>{{message}}</li>
+</ul>
+
+<div class="col card hoverable 
+                    s10 pull-s1 
+                    m6 pull-m3 
+                    l4 pull-l4">
+    <form ng-submit="chat.sendMessage()">
+        <div class="card-content">
+            <div class="input-field col s10">
+                <input required ng-model="chat.message" type="text" class="validate" name="username" />
+                <input type="submit" class=" btn green waves-effect waves-light" value="Send">
+            </div>
+        </div>
+    </form>
+</div>

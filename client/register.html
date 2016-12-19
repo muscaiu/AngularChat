@@ -8,15 +8,15 @@
                     <div class="row">
                         <div class="input-field col s12">
                             <label for="username">Name</label>
-                            <input ng-model="chat.usernameRegister" type="text" class="validate" name="username" />
+                            <input required ng-model="chat.usernameRegister" type="text" class="validate" name="username"/>
                         </div>
                         <div class="input-field col s12">
                             <label for="password">Password </label>
-                            <input ng-model="chat.passwordRegister" type="password" class="validate" name="password" />
+                            <input required ng-model="chat.passwordRegister" type="password" class="validate" name="password"/>
                         </div>
                         <div class="input-field col s12">
                             <label for="password">Repeat Password </label>
-                            <input id="repeatPasswordInput" type="password" class="validate" name="repeatPassword" />
+                            <input required ng-model="chat.repeatPasswordRegister" type="password" class="validate" name="repeatPassword" />
                         </div>
                     </div>
                 </div>
