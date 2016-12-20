@@ -15,10 +15,11 @@ var Message = mongoose.model('message', {
 })
 
 //logged in users
-var varnumUsers = 0;
+var numUsers = 0;
 
 //io
 io.on('connection', function (socket) {
+    var addedUser = false
     //When a request to the api is being done, console.log GetMessages
     console.log('user connected')
 
@@ -53,12 +54,20 @@ io.on('connection', function (socket) {
         console.log('loginUser: ' + username, 'loginPassword: ' + password)
         User.findOne({ username: username, password: password }, function (err, user) {
             if (user) {
+                if (addedUser) return;
+
                 console.log(user.username + ' logged in')
-                //send info that the user has logged in
-                socket.username = username;
+                socket.username = username
+                ++numUsers
+                addedUser = true;
                 //io.sockets.emit('user logged in', socket.username)
-                socket.emit('add to chatroom', socket.username)
-                socket.broadcast.emit('user logged in', socket.username)
+                io.sockets.emit('login', {
+                    numUsers: numUsers
+                });
+                socket.broadcast.emit('user logged in', {
+                    username: socket.username,
+                    numUsers: numUsers
+                })
             }
             else {
                 console.log('wrong credentials')
@@ -78,6 +87,18 @@ io.on('connection', function (socket) {
         //socket.emit('emit message', message)
         io.sockets.emit('emit message', message)
     })
+
+    socket.on('disconnect', function () {
+        if (addedUser) {
+            --numUsers;
+
+            // echo globally that this client has left
+            socket.broadcast.emit('user left', {
+                username: socket.username,
+                numUsers: numUsers
+            });
+        }
+    });
 })
 
 //serve files

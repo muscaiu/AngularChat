@@ -1,6 +1,6 @@
 
 // var app = angular.module('ChatApp', ['ngRoute'])
-var app = angular.module('ChatApp', ['ui.router'])
+var app = angular.module('ChatApp', ['ui.router', 'ngMaterial'])
 
     //UI.ROUTER
     .config(function config($stateProvider, $urlRouterProvider) {
@@ -36,19 +36,31 @@ var app = angular.module('ChatApp', ['ui.router'])
 
     //LoginController
     .controller('ChatController', function ChatController($scope, $state) {
-        var socket = io();
+        var socket = io()
 
-        var chat = this;
-        chat.users = [];
-        chat.messages = [];
+        var chat = this
+        chat.users = []
+        chat.messages = []
+        var connected = false
 
         LoadMessages()
         function LoadMessages() {
             $.getJSON('http://localhost:3000/api/message', function (data) {
                 $.each(data, function (key, val) {
-                    addChatMessage(val.message);
+                    addChatMessage(val.message)
                 })
             })
+        }
+
+        function addParticipantsMessage(data) {
+            $scope.participants = data.numUsers
+
+            // $scope.participants = '';
+            // if (data.numUsers === 1) {
+            //     $scope.participants += "there's 1 participant";
+            // } else {
+            //     $scope.participants += "there are " + data.numUsers + " participants";
+            // }
         }
 
         chat.LoginForm = function () {
@@ -76,7 +88,9 @@ var app = angular.module('ChatApp', ['ui.router'])
             chat.message = ''
         }
 
-        socket.on('add to chatroom', function () {
+        socket.on('login', function (data) {
+            connected = true
+            addParticipantsMessage(data)
             $state.go('chat.chatroom')
             chat.usernameLogin = ''
             chat.passwordLogin = ''
@@ -84,7 +98,7 @@ var app = angular.module('ChatApp', ['ui.router'])
 
         socket.on('user logged in', function (data) {
             $scope.$apply(function () {
-                chat.users.push(data);
+                chat.users.push(data.username);
                 console.log('logged in users: ' + chat.users)
             })
         })
@@ -104,6 +118,17 @@ var app = angular.module('ChatApp', ['ui.router'])
             $scope.$apply(function () {
                 chat.messages.push(data.message);
             })
+        })
+
+        socket.on('user left', function (data) {
+
+            $scope.$apply(function () {
+                chat.users.splice(-1, 1)
+                addParticipantsMessage(data)
+                //chat.users.push(data.username);
+            })
+
+            console.log(data.username + ' left')
         })
     })
 
