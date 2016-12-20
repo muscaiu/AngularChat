@@ -85,7 +85,7 @@ body                            { padding-top:20px; }
 
 #toast-container .toast {
     cursor: pointer;
-    size: 
+    size: auto
 }
 
 #toast-container .toast::after {
@@ -97,4 +97,8 @@ body                            { padding-top:20px; }
     font-weight: 300;
     float: right;
     padding-left: 2rem;
+}
+
+.message{
+    color:red;
 }

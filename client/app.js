@@ -43,11 +43,14 @@ var app = angular.module('ChatApp', ['ui.router', 'ngMaterial'])
         chat.messages = []
         var connected = false
 
+        $scope.participants = 0
+        $scope.currentUser = 'Guest'
+
         LoadMessages()
         function LoadMessages() {
             $.getJSON('http://localhost:3000/api/message', function (data) {
                 $.each(data, function (key, val) {
-                    addChatMessage(val.message)
+                    addChatMessage(val)
                 })
             })
         }
@@ -99,6 +102,7 @@ var app = angular.module('ChatApp', ['ui.router', 'ngMaterial'])
         socket.on('user logged in', function (data) {
             $scope.$apply(function () {
                 chat.users.push(data.username);
+                $scope.currentUser = 'Guest'
                 console.log('logged in users: ' + chat.users)
             })
         })
@@ -111,12 +115,18 @@ var app = angular.module('ChatApp', ['ui.router', 'ngMaterial'])
         //Load Messages
         var addChatMessage = function (data) {
             $scope.$apply(function () {
-                chat.messages.push(data)
+                chat.messages.push({
+                    username: data.username,
+                    message: data.message
+                });
             })
         }
         socket.on('emit message', function (data) {
             $scope.$apply(function () {
-                chat.messages.push(data.message);
+                chat.messages.push({
+                    username: data.username,
+                    message: data.message
+                });
             })
         })
 

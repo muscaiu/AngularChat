@@ -4,6 +4,8 @@
 
 <p>Logged in users: {{participants}}</p>
 
+<span>{{ currentUser }}</span>
+
 <div flex-gt-sm="50" flex="">
     <md-content>
         <md-list flex="">
@@ -11,7 +13,7 @@
             <md-list-item class="md-3-line" ng-repeat="message in chat.messages track by $index" ng-click="null">
                 <!--<img ng-src="{{item.face}}?{{$index}}" class="md-avatar" alt="{{item.who}}">-->
                 <div class="md-list-item-text" layout="column">
-                    <h3>{{ message }}</h3>
+                    <h3>{{ message.username }} : <span class="message">{{ message.message }}</span></h3>
                 </div>
             </md-list-item>
         </md-list>

@@ -11,6 +11,7 @@ var User = mongoose.model('user', {
     password: String
 })
 var Message = mongoose.model('message', {
+    username: String,
     message: String
 })
 
@@ -77,15 +78,19 @@ io.on('connection', function (socket) {
         })
     })
 
-    socket.on('send message', function (message) {
-        console.log('message: ' + message)
+    socket.on('send message', function (data) {
+        console.log('username: ' + socket.username + ', message: ' + data)
         //Save user in MongoDB
         var message = new Message({
-            message: message,
+            username: socket.username,
+            message: data,
         })
         message.save()
         //socket.emit('emit message', message)
-        io.sockets.emit('emit message', message)
+        io.sockets.emit('emit message', {
+            username: socket.username,
+            message: data
+        })
     })
 
     socket.on('disconnect', function () {
