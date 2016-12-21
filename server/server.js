@@ -79,7 +79,7 @@ io.on('connection', function (socket) {
     })
 
     socket.on('send message', function (data) {
-        console.log('username: ' + socket.username + ', message: ' + data)
+        console.log(socket.username + ': ' + data)
         //Save user in MongoDB
         var message = new Message({
             username: socket.username,

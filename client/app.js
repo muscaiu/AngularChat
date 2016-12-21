@@ -140,6 +140,16 @@ var app = angular.module('ChatApp', ['ui.router', 'ngMaterial'])
 
             console.log(data.username + ' left')
         })
+
+        socket.on('disconnect', function () {
+            Materialize.toast('Disconnected', 4000)
+        })
+        socket.on('reconnect', function () {
+            Materialize.toast('Connected', 4000)
+        })
+        socket.on('reconnect_error', function () {
+            Materialize.toast('Attempt to reconnect failed', 4000)
+        })
     })
 
 
