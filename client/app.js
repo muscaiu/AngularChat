@@ -1,6 +1,6 @@
 
 // var app = angular.module('ChatApp', ['ngRoute'])
-var app = angular.module('ChatApp', ['ui.router', 'ngMaterial'])
+var app = angular.module('ChatApp', ['ui.router', 'ngMaterial', 'ngStorage'])
 
     //UI.ROUTER
     .config(function config($stateProvider, $urlRouterProvider) {
@@ -35,16 +35,19 @@ var app = angular.module('ChatApp', ['ui.router', 'ngMaterial'])
     // })
 
     //LoginController
-    .controller('ChatController', function ChatController($scope, $state) {
+    .controller('ChatController', function ChatController($scope, $state, $localStorage) {
         var socket = io()
 
         var chat = this
         chat.users = []
         chat.messages = []
         var connected = false
+        $scope.$participants = 0
 
-        $scope.participants = 0
-        $scope.currentUser = 'Guest'
+        $scope.$currentUser = $localStorage.$default({
+            username: 'Guest',
+            token: null
+        })
 
         LoadMessages()
         function LoadMessages() {
@@ -55,15 +58,9 @@ var app = angular.module('ChatApp', ['ui.router', 'ngMaterial'])
             })
         }
 
-        function addParticipantsMessage(data) {
-            $scope.participants = data.numUsers
-
-            // $scope.participants = '';
-            // if (data.numUsers === 1) {
-            //     $scope.participants += "there's 1 participant";
-            // } else {
-            //     $scope.participants += "there are " + data.numUsers + " participants";
-            // }
+        $scope.clickDisconnect = function () {
+            $scope.$currentUser.$reset()
+            $scope.$currentUser.username = 'Guest'
         }
 
         chat.LoginForm = function () {
@@ -91,18 +88,31 @@ var app = angular.module('ChatApp', ['ui.router', 'ngMaterial'])
             chat.message = ''
         }
 
+        //when the user is succesfully connected by the server
         socket.on('login', function (data) {
             connected = true
-            addParticipantsMessage(data)
             $state.go('chat.chatroom')
             chat.usernameLogin = ''
             chat.passwordLogin = ''
+
+            //connect user to token
+            var userToken = Math.random().toString(36).substring(3, 16)// + new Date
+            localStorage.setItem('userToken', userToken)
+            //socket.emit('user token', localStorage.getItem('userToken'))
+            console.log(userToken)
+
+            $scope.$currentUser = {
+                username: data.username,
+                token: userToken
+            }
+
         })
 
+        //when a user has logged in alert all sockets
         socket.on('user logged in', function (data) {
             $scope.$apply(function () {
                 chat.users.push(data.username);
-                $scope.currentUser = 'Guest'
+                $scope.$participants = data.numUsers
                 console.log('logged in users: ' + chat.users)
             })
         })
@@ -112,7 +122,7 @@ var app = angular.module('ChatApp', ['ui.router', 'ngMaterial'])
             console.log('wrong credentials')
         })
 
-        //Load Messages
+        //add message the screen
         var addChatMessage = function (data) {
             $scope.$apply(function () {
                 chat.messages.push({
@@ -121,6 +131,7 @@ var app = angular.module('ChatApp', ['ui.router', 'ngMaterial'])
                 });
             })
         }
+        //send the message to the server
         socket.on('emit message', function (data) {
             $scope.$apply(function () {
                 chat.messages.push({
@@ -131,13 +142,11 @@ var app = angular.module('ChatApp', ['ui.router', 'ngMaterial'])
         })
 
         socket.on('user left', function (data) {
-
             $scope.$apply(function () {
                 chat.users.splice(-1, 1)
-                addParticipantsMessage(data)
+                $scope.$participants = data.numUsers
                 //chat.users.push(data.username);
             })
-
             console.log(data.username + ' left')
         })
 
@@ -151,8 +160,6 @@ var app = angular.module('ChatApp', ['ui.router', 'ngMaterial'])
             Materialize.toast('Attempt to reconnect failed', 4000)
         })
     })
-
-
 
 $(document).on('click', '#toast-container .toast', function () {
     $(this).fadeOut(function () {

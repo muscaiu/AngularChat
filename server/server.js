@@ -21,8 +21,13 @@ var numUsers = 0;
 //io
 io.on('connection', function (socket) {
     var addedUser = false
+    var userToken = null
     //When a request to the api is being done, console.log GetMessages
     console.log('user connected')
+
+    socket.on('user token', function(data){
+        console.log(data)
+    })
 
     //start API
     app.get('/api/user', GetUsers)
@@ -62,10 +67,11 @@ io.on('connection', function (socket) {
                 ++numUsers
                 addedUser = true;
                 //io.sockets.emit('user logged in', socket.username)
-                io.sockets.emit('login', {
+                socket.emit('login', {
+                    username: socket.username,
                     numUsers: numUsers
                 });
-                socket.broadcast.emit('user logged in', {
+                io.sockets.emit('user logged in', {
                     username: socket.username,
                     numUsers: numUsers
                 })

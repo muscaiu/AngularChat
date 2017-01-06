@@ -2,9 +2,9 @@
     <li>{{user}} - logged in</li>
 </ul>
 
-<p>Logged in users: {{participants}}</p>
+<p>Logged in users: {{ $participants }}</p>
 
-<span>{{ currentUser }}</span>
+<span>you are: <b>{{ $currentUser.username }}</b></span>
 
 <div flex-gt-sm="50" flex="">
     <md-content>
@@ -33,3 +33,4 @@
         </div>
     </form>
 </div>
+<md-button ng-click="clickDisconnect()">Disconnect</md-button>
