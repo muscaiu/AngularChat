@@ -2,23 +2,15 @@
     <li>{{user}} - logged in</li>
 </ul>
 
-<p>Logged in users: {{ $participants }}</p>
+<p class="logged-user-data">Logged in users: {{ $participants }} | <span>you are: <b>{{ $currentUser.username }}</b></span></p>
 
-<span>you are: <b>{{ $currentUser.username }}</b></span>
 
-<div flex-gt-sm="50" flex="">
-    <md-content>
-        <md-list flex="">
-            <md-subheader class="md-no-sticky">Archive...</md-subheader>
-            <md-list-item class="md-3-line" ng-repeat="message in chat.messages track by $index" ng-click="null">
-                <!--<img ng-src="{{item.face}}?{{$index}}" class="md-avatar" alt="{{item.who}}">-->
-                <div class="md-list-item-text" layout="column">
-                    <h3>{{ message.username }} : <span class="message">{{ message.message }}</span></h3>
-                </div>
-            </md-list-item>
-        </md-list>
-    </md-content>
-</div>
+<md-list-item class="md-3-line" ng-repeat="message in chat.messages track by $index" ng-click="null">
+    <!--<img ng-src="{{item.face}}?{{$index}}" class="md-avatar" alt="{{item.who}}">-->
+    <div class="md-list-item-text" layout="column">
+        <h3>{{ message.username }} : <span class="message">{{ message.message }}</span></h3>
+    </div>
+</md-list-item>
 
 <div class="col card hoverable 
             s10 pull-s1 
@@ -33,4 +25,4 @@
         </div>
     </form>
 </div>
-<md-button ng-click="clickDisconnect()">Disconnect</md-button>
+<md-button class="btn-logoff" ng-click="LogOff()">Log Off</md-button>
