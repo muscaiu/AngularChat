@@ -13,12 +13,10 @@ body
     border-radius: 5px;
 }
 
-#form-container .page-header {
-    background: #151515;
-    margin: 0;
-    padding: 30px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+.page-header {
+    padding-bottom: 0px;
+    margin: none;
+    border-bottom: none;
 }
 
 
@@ -204,4 +202,37 @@ body
     position: fixed;
     right: 0;
     top: 0;
+}
+
+.messages-list {
+    background: grey;
+    left: 0 !important;
+    width: 50%;
+    padding: 0;
+    margin: 0;
+}
+
+.messages-window {
+    background-color: #F7F7F7;
+    text-align: left;
+    padding-left: 10px
+}
+
+.card {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%
+}
+
+.card-content {
+    text-align: right;
+}
+
+.input-message {
+    display: inline;
+}
+
+.btn-send {
+    color: red;
 }

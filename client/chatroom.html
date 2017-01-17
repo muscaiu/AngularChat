@@ -4,13 +4,19 @@
 
 <p class="logged-user-data">Logged in users: {{ $participants }} | <span>you are: <b>{{ $currentUser.username }}</b></span></p>
 
-
-<md-list-item class="md-3-line" ng-repeat="message in chat.messages track by $index" ng-click="null">
-    <!--<img ng-src="{{item.face}}?{{$index}}" class="md-avatar" alt="{{item.who}}">-->
-    <div class="md-list-item-text" layout="column">
+<!--<div class="messages-list" ng-repeat="message in chat.messages track by $index">
+    <div>
         <h3>{{ message.username }} : <span class="message">{{ message.message }}</span></h3>
     </div>
-</md-list-item>
+</div>-->
+<div class="messages-window">
+    <md-list-item class="md-3-line" ng-repeat="message in chat.messages track by $index" ng-click="null">
+        <!--<img ng-src="{{item.face}}?{{$index}}" class="md-avatar" alt="{{item.who}}">-->
+        <div class="md-list-item-text" layout="column">
+            <p><b>{{ message.username }}</b> : <span class="message">{{ message.message }}</span></p>
+        </div>
+    </md-list-item>
+</div>
 
 <div class="col card hoverable 
             s10 pull-s1 
@@ -19,8 +25,8 @@
     <form ng-submit="chat.sendMessage()">
         <div class="card-content">
             <div class="input-field col s10">
-                <input required ng-model="chat.message" type="text" class="validate" name="username" />
-                <input type="submit" class=" btn green waves-effect waves-light" value="Send">
+                <input required ng-model="chat.message" type="text" class="validate input-message" name="username" />
+                <input type="submit" class=" btn green waves-effect waves-light btn-send" value="Send">
             </div>
         </div>
     </form>
